@@ -191,7 +191,7 @@ export default {
       gl.useProgram(this.program)
     },
     loadTextures() {
-      let dirs = ['right', 'left', 'top', 'bottom', 'front', 'back']
+      let dirs = ['left', 'right', 'top', 'bottom', 'front', 'back']
       var i = 0
       const gl = this.gl
       let urls = [this.bundle[0], this.bundle[1], this.bundle[2], this.bundle[3], this.bundle[4], this.bundle[5]].map(
@@ -201,7 +201,7 @@ export default {
           img.crossOrigin = ""
 
           img.onload = () => {
-            console.log('loading image: ', url)
+            console.log('!!!loading image: ' + dirs[i], url)
 
             let texture = this.textures[dirs[i]] = gl.createTexture()
             gl.bindTexture(gl.TEXTURE_2D, texture)
