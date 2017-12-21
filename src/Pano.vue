@@ -190,16 +190,20 @@ export default {
       gl.linkProgram(this.program)
       gl.useProgram(this.program)
     },
-
     loadTextures() {
+      let dirs = ['right', 'left', 'top', 'bottom', 'front', 'back']
+      var i = 0
       const gl = this.gl
-      let tasks = ['top', 'bottom', 'front', 'left', 'back', 'right'].map(
-        direction => new Promise((resolve, reject) => {
-          let url = this.bundle + direction + '.' + this.format
+      let urls = [this.bundle[0], this.bundle[1], this.bundle[2], this.bundle[3], this.bundle[4], this.bundle[5]].map(
+        url => new Promise((resolve, reject) => {
+          let image_url = url
           let img = new Image()
+          img.crossOrigin = ""
 
           img.onload = () => {
-            let texture = this.textures[direction] = gl.createTexture()
+            console.log('loading image: ', url)
+
+            let texture = this.textures[dirs[i]] = gl.createTexture()
             gl.bindTexture(gl.TEXTURE_2D, texture)
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -208,17 +212,17 @@ export default {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT)
             gl.generateMipmap(gl.TEXTURE_2D)
             gl.bindTexture(gl.TEXTURE_2D, null)
-
-            resolve(url)
+            i++
+            resolve(image_url)
           }
           img.onerror = reject
           img.src = url
         }))
 
-      Promise.all(tasks).then(images => {
-
+      Promise.all(urls).then(images => {
+        console.log('all loaded!', images)
       }).catch(e => {
-        this.error = 'Unable to load all images'
+        this.error = 'There is no image on this location'
       })
     },
 
@@ -458,8 +462,7 @@ export default {
     width: String,
     height: String,
     title: String,
-    bundle: String,
-    format: String,
+    bundle: Array,
     debug: String,
     description: String
   },
