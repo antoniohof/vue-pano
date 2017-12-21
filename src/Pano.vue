@@ -11,13 +11,6 @@
           <button class="zoomin" ref="zoomin" @click="zoomin">+</button>
           <button class="zoomout" ref="zoomout" @click="zoomout">-</button>
         </div>
-
-        <div class="campas">
-          <div class="direction" v-bind:style="{ transform: 'rotate(' + (-phi) + 'deg)' }" @click="reset">
-            <div class="north"></div>
-            <div class="south"></div>
-          </div>
-        </div>
       </div>
 
       <h3 class="title">{{ title }}</h3>
@@ -221,8 +214,12 @@ export default {
 
       Promise.all(urls).then(images => {
         console.log('all loaded!', images)
+        this.forceUpdate = true
+        setTimeout(function () {
+          this.forceUpdate = false
+        }, 300)
       }).catch(e => {
-        this.error = 'There is no image on this location'
+        this.error = 'Search for places'
       })
     },
 
@@ -390,11 +387,9 @@ export default {
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 24 * 2)
         gl.bindTexture(gl.TEXTURE_2D, textures.right)
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 30 * 2)
-
-        this.forceUpdate = false
       }
 
-      requestAnimationFrame(this.draw.bind(this))
+      this.animationFrame = requestAnimationFrame(this.draw.bind(this))
     }
   },
 
@@ -469,6 +464,7 @@ export default {
 
   data() {
     return {
+      animationFrame: null,
       gl: null,
       dragging: false,
       pinching: false,
@@ -516,6 +512,15 @@ export default {
         vertex: null,
         fragment: null
       }
+    }
+  },
+  watch: {
+    bundle: function () {
+      console.log('detected a new image!!!!')
+      window.cancelAnimationFrame(this.animationFrame)
+      this.loadTextures()
+      this.initModel()
+      this.draw()
     }
   }
 }
