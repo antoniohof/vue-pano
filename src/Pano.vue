@@ -184,19 +184,17 @@ export default {
       gl.useProgram(this.program)
     },
     loadTextures() {
-      let dirs = ['left', 'right', 'top', 'bottom', 'front', 'back']
       var i = 0
       const gl = this.gl
-      let urls = [this.bundle[0], this.bundle[1], this.bundle[2], this.bundle[3], this.bundle[4], this.bundle[5]].map(
-        url => new Promise((resolve, reject) => {
-          let image_url = url
+      let tasks = this.bundle.map(
+        object => new Promise((resolve, reject) => {
           let img = new Image()
-          img.crossOrigin = ""
+          img.crossOrigin = ''
 
           img.onload = () => {
-            console.log('!!!loading image: ' + dirs[i], url)
+            // console.log('456!!!loading image: ' + object.name, object.url)
 
-            let texture = this.textures[dirs[i]] = gl.createTexture()
+            let texture = this.textures[object.name] = gl.createTexture()
             gl.bindTexture(gl.TEXTURE_2D, texture)
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img)
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
@@ -206,18 +204,18 @@ export default {
             gl.generateMipmap(gl.TEXTURE_2D)
             gl.bindTexture(gl.TEXTURE_2D, null)
             i++
-            resolve(image_url)
+            resolve(object.url)
           }
           img.onerror = reject
-          img.src = url
+          img.src = object.url
         }))
 
-      Promise.all(urls).then(images => {
-        console.log('all loaded!', images)
+      Promise.all(tasks).then(images => {
+        // console.log('all loaded!', images)
         this.forceUpdate = true
         setTimeout(function () {
           this.forceUpdate = false
-        }, 300)
+        }, 10)
       }).catch(e => {
         this.error = 'Search for places'
       })
@@ -307,7 +305,21 @@ export default {
     almostEqual(a, b) {
       return Math.abs(a - b) < 1e-4
     },
-
+    clearTextures() {
+      this.gl.deleteTexture(this.textures.left)
+      this.gl.deleteTexture(this.textures.right)
+      this.gl.deleteTexture(this.textures.up)
+      this.gl.deleteTexture(this.textures.down)
+      this.gl.deleteTexture(this.textures.front)
+      this.gl.deleteTexture(this.textures.back)
+      // console.log('cleared texts!')
+      this.textures.up = null
+      this.textures.down = null
+      this.textures.front = null
+      this.textures.back = null
+      this.textures.right = null
+      this.textures.left = null
+    },
     toggleFullscreen() {
       let { element, enter, leave } = this.fullscreen
       if (!element)
@@ -379,13 +391,13 @@ export default {
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
         gl.bindTexture(gl.TEXTURE_2D, textures.back)
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 6 * 2)
-        gl.bindTexture(gl.TEXTURE_2D, textures.top)
+        gl.bindTexture(gl.TEXTURE_2D, textures.up)
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 12 * 2)
-        gl.bindTexture(gl.TEXTURE_2D, textures.bottom)
+        gl.bindTexture(gl.TEXTURE_2D, textures.down)
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 18 * 2)
-        gl.bindTexture(gl.TEXTURE_2D, textures.left)
-        gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 24 * 2)
         gl.bindTexture(gl.TEXTURE_2D, textures.right)
+        gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 24 * 2)
+        gl.bindTexture(gl.TEXTURE_2D, textures.left)
         gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 30 * 2)
       }
 
@@ -439,7 +451,6 @@ export default {
     this.initModel()
     this.draw()
   },
-
   beforeDestroy() {
     const { zoom, resize, prevent } = this
 
@@ -450,7 +461,7 @@ export default {
     document.body.removeEventListener('touchstart', prevent)
 
     // todo: release webgl resources
-    // this.gl.deleteTexture()
+    
   },
 
   props: {
@@ -499,12 +510,12 @@ export default {
       },
 
       textures: {
-        top: null,
-        bottom: null,
-        front: null,
-        back: null,
         left: null,
         right: null,
+        up: null,
+        down: null,
+        front: null,
+        back: null,
       },
 
       program: null,
@@ -516,7 +527,10 @@ export default {
   },
   watch: {
     bundle: function () {
-      console.log('detected a new image!!!!')
+      // console.log('go!detected a new image!!!!', this.bundle)
+      this.clearTextures()
+      this.target.theta = 0
+      this.target.phi = this.phi - (this.phi % 360)
       window.cancelAnimationFrame(this.animationFrame)
       this.loadTextures()
       this.initModel()
