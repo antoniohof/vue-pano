@@ -1,5 +1,5 @@
 <template>
-  <div class="vue-pano viewport" ref="viewport" :class="{ dragging: dragging }"
+  <div class="vue-pano viewport" ref="viewport" :class="{ dragging: dragging, loading: isLoading }"
       @mousedown="startDrag" @touchstart="startDrag"
       @mousemove="onDrag" @touchmove="onDrag"
       @mouseup="stopDrag" @touchend="stopDrag" @mouseleave="stopDrag">
@@ -14,10 +14,6 @@
       </div>
 
       <h3 class="title">{{ title }}</h3>
-
-      <div class="handle toggle-fullscreen" v-show="fullscreen.element">
-        <button @click="toggleFullscreen"></button>
-      </div>
       <canvas ref="canvas"></canvas>
       <div class="debug" v-show="debug">fov: {{ fov }}, theta: {{ theta }}, phi: {{ phi }}</div>
     </template>
@@ -128,7 +124,7 @@ export default {
       let { width, height } = this
 
       if (this.fullscreen.element && document[this.fullscreen.element] == this.$el) {
-        height = width = '100%'
+        height = width = '100vh'
       } else if (+width == width && +height == height) {
         if (width > screen.width || height > height.width) {
           width = height = 0
@@ -184,7 +180,7 @@ export default {
       gl.useProgram(this.program)
     },
     loadTextures() {
-      var i = 0
+      this.isLoading = true
       const gl = this.gl
       let tasks = this.bundle.map(
         object => new Promise((resolve, reject) => {
@@ -203,7 +199,6 @@ export default {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT)
             gl.generateMipmap(gl.TEXTURE_2D)
             gl.bindTexture(gl.TEXTURE_2D, null)
-            i++
             resolve(object.url)
           }
           img.onerror = reject
@@ -211,13 +206,14 @@ export default {
         }))
 
       Promise.all(tasks).then(images => {
+        this.isLoading = false
         // console.log('all loaded!', images)
         this.forceUpdate = true
         setTimeout(function () {
           this.forceUpdate = false
         }, 10)
       }).catch(e => {
-        this.error = 'Search for places'
+        this.error = 'No images here'
       })
     },
 
@@ -322,8 +318,6 @@ export default {
     },
     toggleFullscreen() {
       let { element, enter, leave } = this.fullscreen
-      if (!element)
-        return
 
       if (document[element]) {
         document[leave]()
@@ -483,6 +477,7 @@ export default {
       forceUpdate: true,
       error: '',
       fullscreen: {},
+      isLoading: false,
 
       phi: 90,
       theta: 30,
