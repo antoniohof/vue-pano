@@ -481,18 +481,18 @@ export default {
 
       phi: 90,
       theta: 30,
-      fov: 45,
+      fov: 80,
       mouseX: 0,
       mouseY: 0,
 
       minFov: 20,
-      maxFov: 90,
+      maxFov: 100,
 
       previous: {
         begin: null,
         phi: 180,
         theta: 0,
-        fov: 45,
+        fov: 80,
         mouseX: 0,
         mouseY: 0,
         touchPoints: []
