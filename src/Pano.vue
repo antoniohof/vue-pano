@@ -4,8 +4,8 @@
       @mousemove="onDrag" @touchmove="onDrag"
       @mouseup="stopDrag" @touchend="stopDrag" @mouseleave="stopDrag">
 
-    <div class="error" v-if="error"><span>{{ error }}</span></div>
-    <template v-else>
+    <div class="error" v-if="error != null"><span>{{ error }}</span></div>
+    <template>
       <div class="controls" ref="controls">
         <div class="zoom handle">
           <button class="zoomin" ref="zoomin" @click="zoomin">+</button>
@@ -180,6 +180,7 @@ export default {
       gl.useProgram(this.program)
     },
     loadTextures() {
+      this.error = 'Loading'
       this.isLoading = true
       const gl = this.gl
       let tasks = this.bundle.map(
@@ -209,7 +210,9 @@ export default {
         this.isLoading = false
         // console.log('all loaded!', images)
         this.forceUpdate = true
-        setTimeout(function () {
+        this.error = null
+        window.setTimeout(function () {
+          console.log('time out ended')
           this.forceUpdate = false
         }, 10)
       }).catch(e => {
@@ -475,7 +478,7 @@ export default {
       pinching: false,
       animating: true,
       forceUpdate: true,
-      error: '',
+      error: null,
       fullscreen: {},
       isLoading: false,
 
