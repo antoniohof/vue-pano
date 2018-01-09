@@ -214,6 +214,7 @@ export default {
         window.setTimeout(function () {
           console.log('time out ended')
           this.forceUpdate = false
+          this.error = null
         }, 20)
       }).catch(e => {
         this.error = 'No images here'
@@ -676,6 +677,7 @@ export default {
   left: 0;
   right: 0;
   top: 0;
+  z-index: 1001;
 }
 
 .error > span {
@@ -691,6 +693,7 @@ export default {
   text-align: center;
   text-shadow: 0 0 2px #000;
   top: 50%;
+  z-index: 1001;
 }
 
 .debug {
