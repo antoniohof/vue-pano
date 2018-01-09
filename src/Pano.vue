@@ -214,7 +214,7 @@ export default {
         window.setTimeout(function () {
           console.log('time out ended')
           this.forceUpdate = false
-        }, 10)
+        }, 20)
       }).catch(e => {
         this.error = 'No images here'
       })
@@ -708,7 +708,7 @@ canvas {
   background: #000;
   left: 0;
   top: 0;
-  z-index: -1;
+  z-index: 1000;
 }
 
 </style>
