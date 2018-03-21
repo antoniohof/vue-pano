@@ -668,7 +668,8 @@ export default {
   left: 0;
   right: 0;
   top: 0;
-  z-index: 0;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .error > span {
