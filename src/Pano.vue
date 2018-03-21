@@ -6,13 +6,6 @@
 
     <div class="error" v-if="error != null"><span>{{ error }}</span></div>
     <template>
-      <div class="controls" ref="controls">
-        <div class="zoom handle">
-          <button class="zoomin" ref="zoomin" @click="zoomin">+</button>
-          <button class="zoomout" ref="zoomout" @click="zoomout">-</button>
-        </div>
-      </div>
-
       <h3 class="title">{{ title }}</h3>
       <canvas ref="canvas"></canvas>
       <div class="debug" v-show="debug">fov: {{ fov }}, theta: {{ theta }}, phi: {{ phi }}</div>
@@ -423,7 +416,7 @@ export default {
     this.$el.addEventListener('DOMMouseScroll', zoom, false)
     addEventListener('resize', resize, false)
     addEventListener('touchmove', prevent, false)
-    document.body.addEventListener('touchstart', prevent)
+    // document.body.addEventListener('touchstart', prevent)
 
     const vendors = [
       ['requestFullsceen', 'fullScreenElement', 'cancelFullScreen'],
@@ -456,7 +449,7 @@ export default {
     this.$el.addEventListener('DOMMouseScroll', zoom, false)
     removeEventListener('resize', resize, false)
     removeEventListener('touchmove', prevent, false)
-    document.body.removeEventListener('touchstart', prevent)
+    // document.body.removeEventListener('touchstart', prevent)
 
     // todo: release webgl resources
     
@@ -545,14 +538,12 @@ export default {
   font-family: Helvetica, Arial, sans-serif;
   position: relative;
 
-  -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
    -khtml-user-select: none; /* Konqueror HTML */
      -moz-user-select: none; /* Firefox */
       -ms-user-select: none; /* Internet Explorer/Edge */
           user-select: none; /* Non-prefixed version, currently
                                 supported by Chrome and Opera */
-  cursor: -webkit-grab;
 }
 
 .viewport.dragging {
@@ -677,7 +668,7 @@ export default {
   left: 0;
   right: 0;
   top: 0;
-  z-index: 1001;
+  z-index: 0;
 }
 
 .error > span {
@@ -711,7 +702,7 @@ canvas {
   background: #000;
   left: 0;
   top: 0;
-  z-index: 1000;
+  z-index: 0;
 }
 
 </style>
