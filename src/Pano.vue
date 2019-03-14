@@ -450,7 +450,9 @@ export default {
     removeEventListener('resize', resize, false)
     removeEventListener('touchmove', prevent, false)
     // document.body.removeEventListener('touchstart', prevent)
-
+    window.cancelAnimationFrame(this.animationFrame);
+    this.forceUpdate = false;
+    this.animating = false;
     // todo: release webgl resources
     
   },
