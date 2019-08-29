@@ -454,7 +454,7 @@ export default {
     this.forceUpdate = false;
     this.animating = false;
     // todo: release webgl resources
-    
+
   },
 
   props: {
@@ -480,18 +480,18 @@ export default {
 
       phi: 90,
       theta: 30,
-      fov: 80,
+      fov: 110,
       mouseX: 0,
       mouseY: 0,
 
-      minFov: 20,
-      maxFov: 100,
+      minFov: 50,
+      maxFov: 120,
 
       previous: {
         begin: null,
         phi: 180,
         theta: 0,
-        fov: 80,
+        fov: 110,
         mouseX: 0,
         mouseY: 0,
         touchPoints: []
@@ -500,7 +500,7 @@ export default {
       target: {
         phi: 180,
         theta: 0,
-        fov: 45
+        fov: 110
       },
 
       textures: {
@@ -523,8 +523,8 @@ export default {
     bundle: function () {
       // console.log('go!detected a new image!!!!', this.bundle)
       this.clearTextures()
-      this.target.theta = 0
-      this.target.phi = this.phi - (this.phi % 360)
+      // this.target.theta = 0
+      // this.target.phi = this.phi - (this.phi % 360)
       window.cancelAnimationFrame(this.animationFrame)
       this.loadTextures()
       this.initModel()
